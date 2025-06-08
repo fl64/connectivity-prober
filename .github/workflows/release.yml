@@ -1,0 +1,43 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22"
+
+      - name: Install dependencies
+        run: |
+          go mod tidy
+
+      - name: Build binary
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o connectivity-prober
+        env:
+          VERSION: ${{ github.ref_name }}
+
+      - name: Package binary
+        run: |
+          mkdir -p dist
+          tar -czf dist/connectivity-prober-linux-amd64.tar.gz connectivity-prober
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/connectivity-prober-linux-amd64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
