@@ -4,7 +4,7 @@ A lightweight Go-based utility that periodically checks the availability of netw
 
 ## Build
 
-```
+```bash
 git clone https://github.com/fl64/connectivity-prober.git
 cd connectivity-prober
 go build -o connectivity-prober
